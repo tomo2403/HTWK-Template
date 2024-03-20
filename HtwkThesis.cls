@@ -110,47 +110,87 @@
 \renewcommand{\figurename}{Abb.}	% Bilder werden nicht mehr mit "Abbildung" betitelt, sondern mit "Abb."
 
 %----------------------------------------------------------------------------------------
-%	TITELSEITE
+%	STANDARD INHALTE
 %----------------------------------------------------------------------------------------
 
 \AtBeginDocument{
 	\begin{titlepage}
 		\centering
 
-		% LOGO HTWK
-		\includegraphics[width=0.4\textwidth]{Bilder/LOGO}\par
+		% Logo HTWK
+		\includegraphics[width=0.4\textwidth]{Bilder/LOGO}\\
 		\vspace{1cm}
 
 		% Thema der Arbeit
+		\makeatletter
 		\hspace{0.09\linewidth}
 		\begin{figure}[H]
-			\begin{minipage}{3cm}
+			\begin{minipage}{3.2cm}
 				\colorbox[RGB]{255,242,0}{\rule{3cm}{0pt}\rule{0pt}{8cm}}
 			\end{minipage}
-			\begin{minipage}{\dimexpr\linewidth-6.5cm}
-				\huge\bfseries\centering
-				Das ist das Thema der Abschlussarbeit
+			\begin{minipage}{\dimexpr\linewidth-6.7cm}
+				\huge\bfseries\centering\@title
 			\end{minipage}
-			\begin{minipage}{3cm}
+			\begin{minipage}{3.2cm}
 				\colorbox[RGB]{255,242,0}{\rule{3cm}{0pt}\rule{0pt}{8cm}}
 			\end{minipage}
 		\end{figure}
 
 		% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
-		{\scshape\Large Abschlussarbeit zur Erlangung des akademischen Grades\par}
-		{\scshape\LARGE Bachelor of Engineering \par}
+		{\scshape\Large Abschlussarbeit zur Erlangung des akademischen Grades\\}
+		{\scshape\LARGE\abschluss\\}
 		\vspace{2cm}
+
 		% Autor
-		{\Large\itshape Max Mustermann \par}
+		{\Large\itshape\@author}
 		\vfill
+
 		% Prüfer
-		Erstprüfer: Prof. Dr. \textsc{Muster}\par
-		Zweitprüfer: Prof. Dr.-Ing. M. \textsc{Dios}\par
+		Erstprüfer: \erstpruefer\\
+		Zweitprüfer: \zweitpruefer\\
 		\vfill
 
 		% Ort & Datum
-		{\large Leipzig, den \today\par}
-
-
+		{\large Leipzig, den \@date}
+		\makeatother
 	\end{titlepage}
+
+	\include{Kurzfassung}					% Fügt Abstract hinzu
+	\pagenumbering{Roman}					% Römische Seitenzahlen
+
+	\tableofcontents 						% Erstellt ein Inhaltsverzeichnis
+	\listoffigures							% Erstellt Abbildungsverzeichnis
+	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis} 		% Fügt den Titel ins Inhaltsverzeichnis
+	\listoftables							% Erstellt Tabellenverzeichnis
+	\addcontentsline{toc}{chapter}{Tabellenverzeichnis}	% Fügt den Titel ins Inhaltsverzeichnis
+	\include{Symbolverzeichnis}				% Vorlage zum selber füllen
+	\include{Abkuerzungsverzeichnis}		% Vorlage zum selber füllen
+
+	\pagenumbering{arabic}\setcounter{page}{1}	% Zurückstellen auf arabische Seitenzahlen, Start bei 1
 }
+
+\AtEndDocument{
+	\bibliographystyle{unsrt}				% Legt Zitationsstil fest
+	\bibliography{Literatur}				% Erstellt ein Literaturverzeichnis
+
+	\include{Anhang}
+	\pagenumbering{gobble}
+
+	\chapter*{Selbstständigkeitserklärung}
+	\vspace{3cm}
+
+	Hiermit erkläre ich, dass ich die vorliegende Bachelorarbeit selbständig verfasst und nicht
+	anderweitig zu Prüfungszwecken vorgelegt habe. Es wurden nur die in der Arbeit ausdrücklich benannten Quellen und Hilfsmittel benutzt. Wörtlich oder sinngemäß übernommenes Gedankengut habe ich als solches kenntlich gemacht.
+	\vspace{3cm}
+
+	Ort, Datum: $ \underline{\hspace{4cm}} $ \hspace{2cm} Unterschrift: $ \underline{\hspace{4cm}} $
+}
+
+%----------------------------------------------------------------------------------------
+%	EIGENE BEFEHLE
+%----------------------------------------------------------------------------------------
+
+\newcommand{\email}[1]{\renewcommand{\email}{#1}}
+\newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}}
+\newcommand{\zweitpruefer}[1]{\renewcommand{\zweitpruefer}{#1}}
+\newcommand{\abschluss}[1]{\renewcommand{\abschluss}{#1}}
