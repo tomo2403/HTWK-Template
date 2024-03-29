@@ -24,7 +24,6 @@
 }
 
 \usepackage{etoolbox} % Benötigt für Verarbeitung von Bedingungen
-\RequirePackage{xcolor}
 
 \DeclareVoidOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 \DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
@@ -35,6 +34,8 @@
 \ProcessKeyvalOptions* % Klassenoptionen verarbeiten
 
 \LoadClass{scrbook} % Basisklasse laden
+
+\newdimen\logoheight
 
 %----- Schrift und Sprache --------------
 \usepackage[ngerman]{babel}				%%% Sprachpaket für Deutsche Sprache
@@ -134,67 +135,57 @@
 		\backgroundsetup{
 			scale=1, angle=0, opacity=1, hshift=1cm, contents={
 				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
-				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\paperheight}}
+				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
 				\hspace*{\dimexpr\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
-				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\paperheight}}
+				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
 			}
 		}
 
-		\newdimen\imageheight % goes into the preamble
-		\settoheight{\imageheight}{%
-			\includegraphics[width=0.4\paperwidth]{Bilder/HTWK_Zusatz_H_Black_K}
-		}
-
+		\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{Bilder/HTWK_Zusatz_H_Black_K}}
 		\raggedright
 
 		\ifHtwkTD@fakultaet
-			\begin{figure}[!htb]
-				% Logo HTWK
-				\begin{minipage}{0.48\textwidth}
-					\includegraphics[height=\imageheight]{Bilder/HTWK_Black_K}
-				\end{minipage}
-				\hfill
-				% Logo Fakultät
-				\begin{minipage}{0.3\textwidth}
-					\includegraphics[height=\imageheight]{Bilder/HTWK-Fakultaetszusatz_IM_schwarz}
-				\end{minipage}
-			\end{figure}
+			% Logo HTWK
+			\adjustbox{trim=0 0 {0.5236\width} 0, clip}{\includegraphics[height=\logoheight]{Bilder/HTWK_Zusatz_H_Black_K}}
+			\hfill
+			% Logo Fakultät
+			\includegraphics[height=\logoheight]{Bilder/HTWK-Fakultaetszusatz_IM_schwarz}
 		\else
 			% Logo HTWK
-			\includegraphics[height=\imageheight]{Bilder/HTWK_Zusatz_H_Black_K}
+			\includegraphics[height=\logoheight]{Bilder/HTWK_Zusatz_H_Black_K}
 		\fi
 
 
 		\vfill
-		\centering
 		\makeatletter
-		\begin{minipage}{\textwidth-4cm}
-			\centering
+		\begin{center}
+			\begin{minipage}{\textwidth-4cm}
+				\centering
 
-			% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
-			{\scshape Abschlussarbeit zur Erlangung des akademischen Grades\\}
-			{\scshape\LARGE\abschluss\\}
-			\vspace{1.5cm}
+				% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
+				{\scshape Abschlussarbeit zur Erlangung des akademischen Grades\\}
+				{\scshape\LARGE\abschluss\\}
+				\vspace{1.5cm}
 
-			% Titel
-			{\huge\bfseries\@title\\}
-			\vspace{1.5cm}
+				% Titel
+				{\huge\bfseries\@title\\}
+				\vspace{1.5cm}
 
-			% Autor
-			{\Large\itshape\@author}\\
-			\vspace{24pt}
+				% Autor
+				{\Large\itshape\@author}\\
+				\vspace{24pt}
 
-			% Prüfer
-			Erstprüfer: \erstpruefer\\
-			Zweitprüfer: \zweitpruefer\\
-			\vspace{24pt}
-
-			% Ort & Datum
-			{\large Leipzig, den \@date}
-		\end{minipage}\\
+				% Prüfer
+				Erstprüfer: \erstpruefer\\
+				Zweitprüfer: \zweitpruefer\\
+			\end{minipage}
+		\end{center}
 		\makeatother
 		\raggedright
 		\vfill
+
+		% Ort & Datum
+		{\large Leipzig, den \@date}
 	\end{titlepage}
 
 
