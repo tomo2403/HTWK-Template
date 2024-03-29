@@ -16,7 +16,7 @@
 \ProvidesClass{HtwkThesisDocument}[2024/03/20 HTWK Leipzig schriftliche Arbeit (Vorlage) v1.0]
 
 \RequirePackage{keyval}
-\RequirePackage{kvoptions}
+\RequirePackage[debugshow]{kvoptions}
 \SetupKeyvalOptions{%
 	family=HtwkThesisDocument,%
 	prefix=HtwkTD@,%
@@ -29,6 +29,7 @@
 \DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 
 \DeclareBoolOption{fakultaet}
+\DeclareStringOption[gelb]{farbe}[gelb]
 
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
 \ProcessKeyvalOptions* % Klassenoptionen verarbeiten
@@ -36,6 +37,19 @@
 \LoadClass{scrbook} % Basisklasse laden
 
 \newdimen\logoheight
+
+\newcommand{\htwkfarbe}{0,0,0}
+%\IfValueTF{\HtwkTD@farbe}{
+%	\ifstrequal{\HtwkTD@farbe}{gelb}{
+%		\renewcommand{\htwkfarbe}{255,237,0}
+%	}{
+%		\ifstrequal{\HtwkTD@farbe}{magenta}{
+%			\renewcommand{\htwkfarbe}{229,0,125}
+%		}{
+%			\ClassError{HtwkThesisDocument}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
+%		}
+%	}
+%}{}
 
 %----- Schrift und Sprache --------------
 \usepackage[ngerman]{babel}				%%% Sprachpaket für Deutsche Sprache
@@ -135,9 +149,9 @@
 		\backgroundsetup{
 			scale=1, angle=0, opacity=1, hshift=1cm, contents={
 				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
-				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
 				\hspace*{\dimexpr\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
-				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
 			}
 		}
 
