@@ -13,23 +13,35 @@
 %----------------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{HtwkThesis}[2024/03/20 HTWK Leipzig Abschlussarbeit (Vorlage) v1.0]
+\ProvidesClass{HtwkThesisDocument}[2024/03/20 HTWK Leipzig schriftliche Arbeit (Vorlage) v1.0]
 
-\usepackage{etoolbox} % Required for conditional logic and easily changing commands
+\RequirePackage{keyval}
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{%
+	family=HtwkThesisDocument,%
+	prefix=HtwkTD@,%
+	setkeys=\kvsetkeys
+}
 
-\DeclareOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
-\DeclareOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
+\usepackage{etoolbox} % Benötigt für Verarbeitung von Bedingungen
+\RequirePackage{xcolor}
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrbook}} % Pass through any extra options specified to the base class
-\ProcessOptions\relax % Process class options
+\DeclareVoidOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
+\DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 
-\LoadClass{scrbook} % Load the base class
+\DeclareBoolOption{fakultaet}
 
+\DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
+\ProcessKeyvalOptions* % Klassenoptionen verarbeiten
+
+\LoadClass{scrbook} % Basisklasse laden
 
 %----- Schrift und Sprache --------------
 \usepackage[ngerman]{babel}				%%% Sprachpaket für Deutsche Sprache
 
 \usepackage[utf8]{inputenc}				%%% Verwendung von Umlauten und Kodierung dieser, sodass Latex es kompilieren kann
+
+\usepackage[default,regular,black]{sourceserifpro}				%%% Schriftart
 
 \usepackage[T1]{fontenc} 				%%% Silbentrennung bei Sonderzeichen
 
@@ -44,11 +56,13 @@
 \usepackage{siunitx}					%%% Setzt Einheiten und Zahlen korrekt - nützlich besonders bei naturwissenschaftlichen Arbeiten
 
 %------ Seite einrichten ----------------
-\usepackage[includehead,includefoot, left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm,showframe]{geometry}								%%% Gestaltung der Seitenrändern, Kopf- und Fußzeile
+\usepackage[includehead,includefoot, left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}								%%% Gestaltung der Seitenrändern, Kopf- und Fußzeile
 
 \usepackage[onehalfspacing]{setspace} 	%%% Zeilenbstand anpassen, Hier:1,5-fach
 
-\usepackage{scrextend}					%%% Erweitert die Möglichkeiten von bestimmten Dokumentklassen
+%\usepackage{scrextend}					%%% Erweitert die Möglichkeiten von bestimmten Dokumentklassen
+
+\usepackage[firstpage=true]{background}	%%% Hintergrundelemente
 
 %----- Mathemaische Formeln ------------
 \usepackage{amsmath} 					%%% Erweitert den möglichen Formelsatz
@@ -110,80 +124,81 @@
 \renewcommand{\figurename}{Abb.}	% Bilder werden nicht mehr mit "Abbildung" betitelt, sondern mit "Abb."
 
 %----------------------------------------------------------------------------------------
-%	STANDARD INHALTE
+%	STANDARD Seiten
 %----------------------------------------------------------------------------------------
 
 \AtBeginDocument{
+	\newgeometry{left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm, noheadfoot, nomarginpar}
+
 	\begin{titlepage}
+		\backgroundsetup{
+			scale=1, angle=0, opacity=1, hshift=1cm, contents={
+				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
+				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\paperheight}}
+				\hspace*{\dimexpr\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
+				\colorbox[RGB]{255,237,0}{\rule{24mm}{0pt}\rule{0pt}{0.5\paperheight}}
+			}
+		}
+
+		\newdimen\imageheight % goes into the preamble
+		\settoheight{\imageheight}{%
+			\includegraphics[width=0.4\paperwidth]{Bilder/HTWK_Zusatz_H_Black_K}
+		}
+
+		\raggedright
+
+		\ifHtwkTD@fakultaet
+			\begin{figure}[!htb]
+				% Logo HTWK
+				\begin{minipage}{0.48\textwidth}
+					\includegraphics[height=\imageheight]{Bilder/HTWK_Black_K}
+				\end{minipage}
+				\hfill
+				% Logo Fakultät
+				\begin{minipage}{0.3\textwidth}
+					\includegraphics[height=\imageheight]{Bilder/HTWK-Fakultaetszusatz_IM_schwarz}
+				\end{minipage}
+			\end{figure}
+		\else
+			% Logo HTWK
+			\includegraphics[height=\imageheight]{Bilder/HTWK_Zusatz_H_Black_K}
+		\fi
+
+
+		\vfill
 		\centering
-
-		% Logo HTWK
-		\includegraphics[width=0.4\textwidth]{Bilder/LOGO}\\
-		\vspace{1cm}
-
-		% Thema der Arbeit
 		\makeatletter
-		\hspace{0.09\linewidth}
-		\begin{figure}[H]
-			\begin{minipage}{3.2cm}
-				\colorbox[RGB]{255,237,0}{\rule{3cm}{0pt}\rule{0pt}{8cm}}
-			\end{minipage}
-			\begin{minipage}{\dimexpr\linewidth-6.7cm}
-				\huge\bfseries\centering\@title
-			\end{minipage}
-			\begin{minipage}{3.2cm}
-				\colorbox[RGB]{255,237,0}{\rule{3cm}{0pt}\rule{0pt}{8cm}}
-			\end{minipage}
-		\end{figure}
+		\begin{minipage}{\textwidth-4cm}
+			\centering
 
-		% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
-		{\scshape\Large Abschlussarbeit zur Erlangung des akademischen Grades\\}
-		{\scshape\LARGE\abschluss\\}
-		\vspace{2cm}
+			% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
+			{\scshape Abschlussarbeit zur Erlangung des akademischen Grades\\}
+			{\scshape\LARGE\abschluss\\}
+			\vspace{1.5cm}
 
-		% Autor
-		{\Large\itshape\@author}
-		\vfill
+			% Titel
+			{\huge\bfseries\@title\\}
+			\vspace{1.5cm}
 
-		% Prüfer
-		Erstprüfer: \erstpruefer\\
-		Zweitprüfer: \zweitpruefer\\
-		\vfill
+			% Autor
+			{\Large\itshape\@author}\\
+			\vspace{24pt}
 
-		% Ort & Datum
-		{\large Leipzig, den \@date}
+			% Prüfer
+			Erstprüfer: \erstpruefer\\
+			Zweitprüfer: \zweitpruefer\\
+			\vspace{24pt}
+
+			% Ort & Datum
+			{\large Leipzig, den \@date}
+		\end{minipage}\\
 		\makeatother
+		\raggedright
+		\vfill
 	\end{titlepage}
 
-	\include{Kurzfassung}					% Fügt Abstract hinzu
-	\pagenumbering{Roman}					% Römische Seitenzahlen
 
-	\tableofcontents 						% Erstellt ein Inhaltsverzeichnis
-	\listoffigures							% Erstellt Abbildungsverzeichnis
-	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis} 		% Fügt den Titel ins Inhaltsverzeichnis
-	\listoftables							% Erstellt Tabellenverzeichnis
-	\addcontentsline{toc}{chapter}{Tabellenverzeichnis}	% Fügt den Titel ins Inhaltsverzeichnis
-	\include{Symbolverzeichnis}				% Vorlage zum selber füllen
-	\include{Abkuerzungsverzeichnis}		% Vorlage zum selber füllen
-
-	\pagenumbering{arabic}\setcounter{page}{1}	% Zurückstellen auf arabische Seitenzahlen, Start bei 1
-}
-
-\AtEndDocument{
-	\bibliographystyle{unsrt}				% Legt Zitationsstil fest
-	\bibliography{Literatur}				% Erstellt ein Literaturverzeichnis
-
-	\include{Anhang}
-	\pagenumbering{gobble}
-
-	\chapter*{Selbstständigkeitserklärung}
-	\vspace{3cm}
-
-	Hiermit erkläre ich, dass ich die vorliegende Bachelorarbeit selbständig verfasst und nicht
-	anderweitig zu Prüfungszwecken vorgelegt habe. Es wurden nur die in der Arbeit ausdrücklich benannten Quellen und Hilfsmittel benutzt. Wörtlich oder sinngemäß übernommenes Gedankengut habe ich als solches kenntlich gemacht.
-	\vspace{3cm}
-
-	Ort, Datum: $ \underline{\hspace{4cm}} $ \hspace{2cm} Unterschrift: $ \underline{\hspace{4cm}} $
+	\restoregeometry
 }
 
 %----------------------------------------------------------------------------------------
