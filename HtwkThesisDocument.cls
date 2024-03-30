@@ -15,8 +15,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{HtwkThesisDocument}[2024/03/20 HTWK Leipzig schriftliche Arbeit (Vorlage) v1.0]
 
-\RequirePackage{keyval}
-\RequirePackage{kvoptions}
+\RequirePackage{kvoptions} % Erweitert die Klassenoptionen
 \SetupKeyvalOptions{
 	family=HtwkThesisDocument,
 	prefix=HtwkTD@,
@@ -28,8 +27,8 @@
 \DeclareVoidOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 \DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 
-\DeclareBoolOption{fakultaet}
-\DeclareStringOption[gelb]{farbe}
+\DeclareBoolOption{fakultaet} % Option zum Anzeigen des Logos der Fakultät
+\DeclareStringOption[gelb]{farbe} % Option zum festlegen der Anzeigefarbe
 
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
 \ProcessKeyvalOptions* % Klassenoptionen verarbeiten
@@ -38,8 +37,8 @@
 
 \newdimen\logoheight
 
-\newcommand{\htwkfarbe}{}
-\IfValueTF{\HtwkTD@farbe}{
+\newcommand{\htwkfarbe}{} % Befehl für das abrufen der Anzeigefarbe
+\IfValueTF{\HtwkTD@farbe}{ % Prüfen der festgelegten Farbe
 	\ifdefstring{\HtwkTD@farbe}{gelb}{\renewcommand{\htwkfarbe}{255,237,0}}{
 	\ifdefstring{\HtwkTD@farbe}{magenta}{\renewcommand{\htwkfarbe}{229,0,125}}{
 	\ifdefstring{\HtwkTD@farbe}{rot}{\renewcommand{\htwkfarbe}{229,48,9}}{
@@ -51,7 +50,7 @@
 	\ifdefstring{\HtwkTD@farbe}{dunkelblau}{\renewcommand{\htwkfarbe}{2,37,65}}{
 	\ifdefstring{\HtwkTD@farbe}{schwarz}{\renewcommand{\htwkfarbe}{0,0,0}}{
 		\ClassError{HtwkThesisDocument}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
-		\stop
+		\stop % Ausgewählte Farbe unzulässig
 	}}}}}}}}}}}{}
 
 
@@ -81,7 +80,7 @@
 
 %\usepackage{scrextend}					%%% Erweitert die Möglichkeiten von bestimmten Dokumentklassen
 
-\usepackage[firstpage=true]{background}	%%% Hintergrundelemente
+\usepackage[firstpage=true, scale=1, angle=0, opacity=1]{background}	%%% Hintergrundelemente
 
 %----- Mathemaische Formeln ------------
 \usepackage{amsmath} 					%%% Erweitert den möglichen Formelsatz
@@ -147,19 +146,18 @@
 %----------------------------------------------------------------------------------------
 
 \AtBeginDocument{
-	\newgeometry{left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm, noheadfoot, nomarginpar}
+	\newgeometry{left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm, noheadfoot, nomarginpar} % Layout für Titelseite anpassen
 
 	\begin{titlepage}
-		\backgroundsetup{
-			scale=1, angle=0, opacity=1, hshift=1cm, contents={
+		\backgroundsetup{hshift=1cm, contents={
 				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
 				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
-				\hspace*{\dimexpr\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
+				\hspace*{\dimexpr-\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
 				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
 			}
-		}
+		} % Farbige Streifen links und rechts
 
-		\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{Bilder/HTWK_Zusatz_H_Black_K}}
+		\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{Bilder/HTWK_Zusatz_H_Black_K}} % HTWK Logo Höhe messen
 		\raggedright
 
 		\ifHtwkTD@fakultaet
@@ -173,10 +171,9 @@
 			\includegraphics[height=\logoheight]{Bilder/HTWK_Zusatz_H_Black_K}
 		\fi
 
-
 		\vfill
 		\makeatletter
-		\begin{center}
+		\begin{center} % Mittiger Inhalt der Titelseite
 			\begin{minipage}{\textwidth-4cm}
 				\centering
 
@@ -207,14 +204,14 @@
 	\end{titlepage}
 
 
-	\restoregeometry
+	\restoregeometry % Standardlayout wiederherstellen
 }
 
 %----------------------------------------------------------------------------------------
 %	EIGENE BEFEHLE
 %----------------------------------------------------------------------------------------
 
-\newcommand{\email}[1]{\renewcommand{\email}{#1}}
-\newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}}
-\newcommand{\zweitpruefer}[1]{\renewcommand{\zweitpruefer}{#1}}
-\newcommand{\abschluss}[1]{\renewcommand{\abschluss}{#1}}
+\newcommand{\email}[1]{\renewcommand{\email}{#1}} % E-Mail-Adresse des Autor
+\newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}} % Name des ersten Prüfers
+\newcommand{\zweitpruefer}[1]{\renewcommand{\zweitpruefer}{#1}} % Name des zweiten Prüfers
+\newcommand{\abschluss}[1]{\renewcommand{\abschluss}{#1}} % Abschluss welcher mit dieser Arbeit erlangt wird
