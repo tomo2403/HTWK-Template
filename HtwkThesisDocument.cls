@@ -22,20 +22,32 @@
 	setkeys=\kvsetkeys
 }
 
-\usepackage{etoolbox} % Benötigt für Verarbeitung von Bedingungen
+\usepackage{etoolbox} % Benötigt für Hooks
+\usepackage{ifthen}% Benötigt für Verarbeitung von Bedingungen
 
+\newboolean{istAbschlussarbeit}
+\newboolean{fakultaetAnzeigen}
+
+\DeclareVoidOption{istAbschlussarbeit}{\setboolean{istAbschlussarbeit}{true}} % Option zum Ändern des Typs der Arbeit
+\DeclareVoidOption{fakultaetAnzeigen}{\setboolean{fakultaetAnzeigen}{true}} % Option zum Anzeigen des Logos der Fakultät
 \DeclareVoidOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 \DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 
-\DeclareBoolOption{fakultaet} % Option zum Anzeigen des Logos der Fakultät
 \DeclareStringOption[gelb]{farbe} % Option zum festlegen der Anzeigefarbe
 
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
-\ProcessKeyvalOptions* % Klassenoptionen verarbeiten
+\ProcessKeyvalOptions{HtwkThesisDocument} % Klassenoptionen verarbeiten
 
 \LoadClass{scrbook} % Basisklasse laden
 
+\newdimen\titleheight
 \newdimen\logoheight
+\newdimen\logoVheight
+\newdimen\logowidth
+
+\newcommand{\htwkLogoH}{Bilder/HTWK_Zusatz_H_Black_K}
+\newcommand{\htwkLogoV}{Bilder/HTWK_Zusatz_V_Black_K}
+\newcommand{\fakultaetLogo}{Bilder/HTWK-Fakultaetszusatz_IM_schwarz}
 
 \newcommand{\htwkfarbe}{} % Befehl für das abrufen der Anzeigefarbe
 \IfValueTF{\HtwkTD@farbe}{ % Prüfen der festgelegten Farbe
@@ -52,6 +64,9 @@
 		\ClassError{HtwkThesisDocument}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
 		\stop % Ausgewählte Farbe unzulässig
 	}}}}}}}}}}}{}
+
+\newcommand{\titlepageboxheight}{2\titleheight}
+\ifthenelse{\boolean{istAbschlussarbeit}}{\renewcommand{\titlepageboxheight}{0.5\paperheight}}{}
 
 
 %----- Schrift und Sprache --------------
@@ -147,60 +162,99 @@
 
 \AtBeginDocument{
 	\newgeometry{left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm, noheadfoot, nomarginpar} % Layout für Titelseite anpassen
+	\renewcommand\arraystretch{1}
+
+	\settoheight{\titleheight}{\parbox{\textwidth-4cm}{\Huge\bfseries\@title\\}}
+	\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{\htwkLogoH}} % HTWK Logo Höhe messen
+	\settowidth{\logowidth}{\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}}} % HTWK Logo Breite messen
+	\settoheight{\logoVheight}{\includegraphics[width=\logowidth]{\htwkLogoV}} % Vertikales HTWK Logo Höhe messen
 
 	\begin{titlepage}
+		\raggedright
 		\backgroundsetup{hshift=1cm, contents={
 				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
-				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
 				\hspace*{\dimexpr-\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
-				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{0.5\textheight}}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
 			}
 		} % Farbige Streifen links und rechts
 
-		\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{Bilder/HTWK_Zusatz_H_Black_K}} % HTWK Logo Höhe messen
-		\raggedright
+		\ifthenelse{\boolean{istAbschlussarbeit}}{
+			\centering
+			\includegraphics[width=\logowidth]{\htwkLogoV} % Logo HTWK
+			\vspace*{-\logoVheight}
+			\ifthenelse{\boolean{fakultaetAnzeigen}}{
+				\ClassInfo{HtwkThesisDocument}{Das Logo der Fakultät ist auf Abschlussarbeiten nicht sichtbar.}
+			}{}
+		}{
+			\ifthenelse{\boolean{fakultaetAnzeigen}}{
+				\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}} % Logo HTWK
+				\hfill
+				\includegraphics[height=\logoheight]{\fakultaetLogo} % Logo Fakultät
+			}{
+				\includegraphics[height=\logoheight]{\htwkLogoH} % Logo HTWK
+			}
+		}
 
-		\ifHtwkTD@fakultaet
-			% Logo HTWK
-			\adjustbox{trim=0 0 {0.5236\width} 0, clip}{\includegraphics[height=\logoheight]{Bilder/HTWK_Zusatz_H_Black_K}}
-			\hfill
-			% Logo Fakultät
-			\includegraphics[height=\logoheight]{Bilder/HTWK-Fakultaetszusatz_IM_schwarz}
-		\else
-			% Logo HTWK
-			\includegraphics[height=\logoheight]{Bilder/HTWK_Zusatz_H_Black_K}
-		\fi
+		\vspace*{\logoheight}
 
+		\large
+		\ifthenelse{\boolean{istAbschlussarbeit}}{}{
+			\begin{tabular}{@{}ll@{}}
+				Studiengang: & \studiengang \\
+				Semester:    & \semester    \\
+				Modul:       & \modul       \\
+				Dozent:      & \erstpruefer
+			\end{tabular}\\
+		}
 		\vfill
-		\makeatletter
+
 		\begin{center} % Mittiger Inhalt der Titelseite
 			\begin{minipage}{\textwidth-4cm}
 				\centering
 
-				% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
-				{\scshape Abschlussarbeit zur Erlangung des akademischen Grades\\}
-				{\scshape\LARGE\abschluss\\}
-				\vspace{1.5cm}
+				\ifthenelse{\boolean{istAbschlussarbeit}}{
+					% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
+					{\scshape Abschlussarbeit zur Erlangung\break des akademischen Grades\\}
+					{\scshape\LARGE\abschluss\\}
+				}{}
 
 				% Titel
-				{\huge\bfseries\@title\\}
-				\vspace{1.5cm}
+				\vspace{2\baselineskip}
+				{\Huge\bfseries\@title\\}
+				\vspace{2\baselineskip}
 
-				% Autor
-				{\Large\itshape\@author}\\
-				\vspace{24pt}
+				\ifthenelse{\boolean{istAbschlussarbeit}}{
+					% Autor
+					{vorgelegt von:\\\Large\itshape\@author}\\
+					\vspace{2\baselineskip}
 
-				% Prüfer
-				Erstprüfer: \erstpruefer\\
-				Zweitprüfer: \zweitpruefer\\
+					% Prüfer
+					Erstprüfer: \erstpruefer\\
+					Zweitprüfer: \zweitpruefer\\
+
+					\vspace{2\baselineskip}
+
+					Abgegeben am \@date
+				}{}
 			\end{minipage}
 		\end{center}
-		\makeatother
-		\raggedright
+
 		\vfill
 
-		% Ort & Datum
-		{\large Leipzig, den \@date}
+		\large
+		\ifthenelse{\boolean{istAbschlussarbeit}}{
+			\vspace*{\logoheight}
+		}{
+			\begin{tabular}{@{}ll@{}}
+				Vorgelegt von:  & \@author        \\ % Autor
+				Matrikelnr.:    & \matrikelnummer \\
+				E-Mail-Adresse: & \email          \\
+				Fachsemester:   & \fachsemester
+			\end{tabular}\break\\
+
+			Leipzig, den \@date % Ort & Datum
+		}
 	\end{titlepage}
 
 
@@ -215,3 +269,8 @@
 \newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}} % Name des ersten Prüfers
 \newcommand{\zweitpruefer}[1]{\renewcommand{\zweitpruefer}{#1}} % Name des zweiten Prüfers
 \newcommand{\abschluss}[1]{\renewcommand{\abschluss}{#1}} % Abschluss welcher mit dieser Arbeit erlangt wird
+\newcommand{\fachsemester}[1]{\renewcommand{\fachsemester}{#1}} % Fachsemester des Autors
+\newcommand{\matrikelnummer}[1]{\renewcommand{\matrikelnummer}{#1}} % Matrikelnummer des Autors
+\newcommand{\modul}[1]{\renewcommand{\modul}{#1}} % Das Modul in welchem die Arbeit verfasst wird
+\newcommand{\semester}[1]{\renewcommand{\semester}{#1}} % Das aktuelle Semester (WiSe 2023/24, SoSe 2024)
+\newcommand{\studiengang}[1]{\renewcommand{\studiengang}{#1}} % Studengang des Autors
