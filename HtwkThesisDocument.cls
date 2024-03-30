@@ -65,7 +65,7 @@
 		\stop % Ausgewählte Farbe unzulässig
 	}}}}}}}}}}}{}
 
-\newcommand{\titlepageboxheight}{2\titleheight}
+\newcommand{\titlepageboxheight}{3\titleheight}
 \ifthenelse{\boolean{istAbschlussarbeit}}{\renewcommand{\titlepageboxheight}{0.5\paperheight}}{}
 
 
@@ -170,82 +170,73 @@
 	\settoheight{\logoVheight}{\includegraphics[width=0.24\paperwidth]{\htwkLogoV}} % Vertikales HTWK Logo Höhe messen
 
 	\begin{titlepage}
-		\raggedright
-		\backgroundsetup{hshift=1cm, contents={
-				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
-				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
-				\hspace*{\dimexpr-\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
-				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
-			}
-		} % Farbige Streifen links und rechts
-
-		\ifthenelse{\boolean{istAbschlussarbeit}}{
+		\ifthenelse{\boolean{istAbschlussarbeit}}{ % Titelseite für Abschlussarbeit
 			\centering
 			\includegraphics[width=0.24\paperwidth]{\htwkLogoV} % Logo HTWK
-			\vspace*{-\logoVheight}
+
 			\ifthenelse{\boolean{fakultaetAnzeigen}}{
 				\ClassInfo{HtwkThesisDocument}{Das Logo der Fakultät ist auf Abschlussarbeiten nicht sichtbar.}
 			}{}
-		}{
-			\ifthenelse{\boolean{fakultaetAnzeigen}}{
-				\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}} % Logo HTWK
-				\hfill
-				\includegraphics[height=\logoheight]{\fakultaetLogo} % Logo Fakultät
-			}{
-				\includegraphics[height=\logoheight]{\htwkLogoH} % Logo HTWK
-			}
-		}
 
-		\vspace*{\logoheight}
+			\vfill
+			\vspace*{-\logoVheight}
 
-		\large
-		\ifthenelse{\boolean{istAbschlussarbeit}}{}{
-			\begin{tabular}{@{}ll@{}}
-				Studiengang: & \studiengang \\
-				Semester:    & \semester    \\
-				Modul:       & \modul       \\
-				Dozent:      & \erstpruefer
-			\end{tabular}\\
-		}
-		\vfill
-
-		\begin{center} % Mittiger Inhalt der Titelseite
 			\begin{minipage}{\textwidth-4cm}
 				\centering
-
-				\ifthenelse{\boolean{istAbschlussarbeit}}{
-					% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
-					{\scshape Abschlussarbeit zur Erlangung\break des akademischen Grades\\}
-					{\scshape\LARGE\abschluss\\}
-				}{}
+				% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
+				{\scshape Abschlussarbeit zur Erlangung\break des akademischen Grades\\}
+				{\scshape\LARGE\abschluss\\}
 
 				% Titel
 				\vspace{2\baselineskip}
 				{\Huge\bfseries\@title\\}
 				\vspace{2\baselineskip}
 
-				\ifthenelse{\boolean{istAbschlussarbeit}}{
-					% Autor
-					{vorgelegt von:\\\Large\itshape\@author}\\
-					\vspace{2\baselineskip}
+				% Autor
+				{vorgelegt von:\\\Large\itshape\@author}\\
+				\vspace{2\baselineskip}
 
-					% Prüfer
-					Erstprüfer: \erstpruefer\\
-					Zweitprüfer: \zweitpruefer\\
+				% Prüfer
+				Erstprüfer: \erstpruefer\\
+				Zweitprüfer: \zweitpruefer\\
 
-					\vspace{2\baselineskip}
+				\vspace{2\baselineskip}
 
-					Abgegeben am \@date
-				}{}
+				Abgegeben am \@date
 			\end{minipage}
-		\end{center}
+			\vfill
+		}{ % Titelseite für schriftliche Arbeit
+			\raggedright
+			\ifthenelse{\boolean{fakultaetAnzeigen}}{
+				\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}} % Logo HTWK ohne Zusatz
+				\hfill
+				\includegraphics[height=\logoheight]{\fakultaetLogo} % Logo Fakultät
+			}{
+				\includegraphics[height=\logoheight]{\htwkLogoH} % Logo HTWK
+			}
 
-		\vfill
-
-		\large
-		\ifthenelse{\boolean{istAbschlussarbeit}}{
 			\vspace*{\logoheight}
-		}{
+			\large
+			\begin{tabular}{@{}ll@{}}
+				Studiengang: & \studiengang \\
+				Semester:    & \semester    \\
+				Modul:       & \modul       \\
+				Dozent:      & \erstpruefer
+			\end{tabular}\\
+
+			\vfill
+
+			\centering
+			\begin{minipage}{\textwidth-4cm}
+				% Titel
+				\vspace{2\baselineskip}
+				\centering\Huge\bfseries\@title
+				\vspace{2\baselineskip}
+			\end{minipage}
+
+			\vfill
+
+			\raggedright\large
 			\begin{tabular}{@{}ll@{}}
 				Vorgelegt von:  & \@author        \\ % Autor
 				Matrikelnr.:    & \matrikelnummer \\
@@ -255,8 +246,15 @@
 
 			Leipzig, den \@date % Ort & Datum
 		}
-	\end{titlepage}
 
+		\backgroundsetup{hshift=1cm, contents={
+				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
+				\hspace*{\dimexpr-\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
+			}
+		} % Farbige Streifen links und rechts
+	\end{titlepage}
 
 	\restoregeometry % Standardlayout wiederherstellen
 }
