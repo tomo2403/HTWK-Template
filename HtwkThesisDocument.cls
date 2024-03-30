@@ -167,7 +167,7 @@
 	\settoheight{\titleheight}{\parbox{\textwidth-4cm}{\Huge\bfseries\@title\\}}
 	\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{\htwkLogoH}} % HTWK Logo Höhe messen
 	\settowidth{\logowidth}{\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}}} % HTWK Logo Breite messen
-	\settoheight{\logoVheight}{\includegraphics[width=\logowidth]{\htwkLogoV}} % Vertikales HTWK Logo Höhe messen
+	\settoheight{\logoVheight}{\includegraphics[width=0.24\paperwidth]{\htwkLogoV}} % Vertikales HTWK Logo Höhe messen
 
 	\begin{titlepage}
 		\raggedright
@@ -181,7 +181,7 @@
 
 		\ifthenelse{\boolean{istAbschlussarbeit}}{
 			\centering
-			\includegraphics[width=\logowidth]{\htwkLogoV} % Logo HTWK
+			\includegraphics[width=0.24\paperwidth]{\htwkLogoV} % Logo HTWK
 			\vspace*{-\logoVheight}
 			\ifthenelse{\boolean{fakultaetAnzeigen}}{
 				\ClassInfo{HtwkThesisDocument}{Das Logo der Fakultät ist auf Abschlussarbeiten nicht sichtbar.}
