@@ -16,10 +16,10 @@
 \ProvidesClass{HtwkThesisDocument}[2024/03/20 HTWK Leipzig schriftliche Arbeit (Vorlage) v1.0]
 
 \RequirePackage{keyval}
-\RequirePackage[debugshow]{kvoptions}
-\SetupKeyvalOptions{%
-	family=HtwkThesisDocument,%
-	prefix=HtwkTD@,%
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{
+	family=HtwkThesisDocument,
+	prefix=HtwkTD@,
 	setkeys=\kvsetkeys
 }
 
@@ -29,7 +29,7 @@
 \DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 
 \DeclareBoolOption{fakultaet}
-\DeclareStringOption[gelb]{farbe}[gelb]
+\DeclareStringOption[gelb]{farbe}
 
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
 \ProcessKeyvalOptions* % Klassenoptionen verarbeiten
@@ -38,18 +38,22 @@
 
 \newdimen\logoheight
 
-\newcommand{\htwkfarbe}{0,0,0}
-%\IfValueTF{\HtwkTD@farbe}{
-%	\ifstrequal{\HtwkTD@farbe}{gelb}{
-%		\renewcommand{\htwkfarbe}{255,237,0}
-%	}{
-%		\ifstrequal{\HtwkTD@farbe}{magenta}{
-%			\renewcommand{\htwkfarbe}{229,0,125}
-%		}{
-%			\ClassError{HtwkThesisDocument}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
-%		}
-%	}
-%}{}
+\newcommand{\htwkfarbe}{}
+\IfValueTF{\HtwkTD@farbe}{
+	\ifdefstring{\HtwkTD@farbe}{gelb}{\renewcommand{\htwkfarbe}{255,237,0}}{
+	\ifdefstring{\HtwkTD@farbe}{magenta}{\renewcommand{\htwkfarbe}{229,0,125}}{
+	\ifdefstring{\HtwkTD@farbe}{rot}{\renewcommand{\htwkfarbe}{229,48,9}}{
+	\ifdefstring{\HtwkTD@farbe}{gruen}{\renewcommand{\htwkfarbe}{0,150,78}}{
+	\ifdefstring{\HtwkTD@farbe}{cyan}{\renewcommand{\htwkfarbe}{0,158,227}}{
+	\ifdefstring{\HtwkTD@farbe}{blau}{\renewcommand{\htwkfarbe}{0,70,153}}{
+	\ifdefstring{\HtwkTD@farbe}{silbergrau}{\renewcommand{\htwkfarbe}{190,195,198}}{
+	\ifdefstring{\HtwkTD@farbe}{grau}{\renewcommand{\htwkfarbe}{46,54,57}}{
+	\ifdefstring{\HtwkTD@farbe}{dunkelblau}{\renewcommand{\htwkfarbe}{2,37,65}}{
+	\ifdefstring{\HtwkTD@farbe}{schwarz}{\renewcommand{\htwkfarbe}{0,0,0}}{
+		\ClassError{HtwkThesisDocument}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
+		\stop
+	}}}}}}}}}}}{}
+
 
 %----- Schrift und Sprache --------------
 \usepackage[ngerman]{babel}				%%% Sprachpaket für Deutsche Sprache
