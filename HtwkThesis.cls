@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % HTWK Leipzig Abschlussarbeit (Vorlage)
 % LaTeX Class
-% Version 1.0 (Mar 20, 2024)
+% Version 1.0 (Mar 31, 2024)
 %
 % Author:
 % Tom Mohr (tom.mohr@stud.htwk-leipzig.de)
@@ -13,23 +13,81 @@
 %----------------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{HtwkThesis}[2024/03/20 HTWK Leipzig Abschlussarbeit (Vorlage) v1.0]
+\ProvidesClass{HtwkThesis}[2024/03/31 HTWK Leipzig schriftliche Arbeit v1.0]
 
-\usepackage{etoolbox} % Required for conditional logic and easily changing commands
+\RequirePackage{kvoptions} % Erweitert die Klassenoptionen
+\SetupKeyvalOptions{
+	family=HtwkThesis,
+	prefix=HtwkThesis@,
+	setkeys=\kvsetkeys
+}
 
-\DeclareOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
-\DeclareOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
+\usepackage{etoolbox} % Benötigt für Hooks
+\usepackage{ifthen}% Benötigt für Verarbeitung von Bedingungen
+\usepackage{xstring}
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrbook}} % Pass through any extra options specified to the base class
-\ProcessOptions\relax % Process class options
+\newboolean{istAbschlussarbeit}
 
-\LoadClass{scrbook} % Load the base class
+\DeclareVoidOption{istAbschlussarbeit}{\setboolean{istAbschlussarbeit}{true}} % Option zum Ändern des Typs der Arbeit
+
+\DeclareStringOption{farbe} % Option zum festlegen der Anzeigefarbe
+\DeclareStringOption{fakultaet} % Option zum festlegen der Anzeigefarbe
+
+\DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
+\ProcessKeyvalOptions{HtwkThesis} % Klassenoptionen verarbeiten
+
+\LoadClass[a4paper]{scrbook} % Basisklasse laden
+
+\newdimen\titleheight
+\newdimen\logoheight
+\newdimen\logoVheight
+
+\newcommand{\fakultaet}{} % Befehl für das Abrufen der Fakultät
+\IfValueTF{\HtwkThesis@fakultaet}{ % Prüfen der festgelegten Fakultät
+	\ifdefstring{\HtwkThesis@fakultaet}{}{\renewcommand{\fakultaet}{none}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{as}{\renewcommand{\fakultaet}{as}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{b}{\renewcommand{\fakultaet}{b}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{dit}{\renewcommand{\fakultaet}{dit}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{im}{\renewcommand{\fakultaet}{im}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{ing}{\renewcommand{\fakultaet}{ing}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{mnz}{\renewcommand{\fakultaet}{mnz}}{
+	\ifdefstring{\HtwkThesis@fakultaet}{ww}{\renewcommand{\fakultaet}{ww}}{
+		\ClassError{HtwkThesis}{Ungueltige Fakultaet!}{}
+		\stop % Ausgewählte Fakultät unzulässig
+}}}}}}}}}{}
+
+\newcommand{\htwkfarbe}{} % Befehl für das Abrufen der Anzeigefarbe
+\IfValueTF{\HtwkThesis@farbe}{ % Prüfen der festgelegten Farbe
+	\ifdefstring{\HtwkThesis@farbe}{}{\renewcommand{\htwkfarbe}{255,255,255}}{
+	\ifdefstring{\HtwkThesis@farbe}{gelb}{\renewcommand{\htwkfarbe}{255,237,0}}{
+	\ifdefstring{\HtwkThesis@farbe}{magenta}{\renewcommand{\htwkfarbe}{229,0,125}}{
+	\ifdefstring{\HtwkThesis@farbe}{rot}{\renewcommand{\htwkfarbe}{229,48,9}}{
+	\ifdefstring{\HtwkThesis@farbe}{gruen}{\renewcommand{\htwkfarbe}{0,150,78}}{
+	\ifdefstring{\HtwkThesis@farbe}{cyan}{\renewcommand{\htwkfarbe}{0,158,227}}{
+	\ifdefstring{\HtwkThesis@farbe}{blau}{\renewcommand{\htwkfarbe}{0,70,153}}{
+	\ifdefstring{\HtwkThesis@farbe}{silbergrau}{\renewcommand{\htwkfarbe}{190,195,198}}{
+	\ifdefstring{\HtwkThesis@farbe}{grau}{\renewcommand{\htwkfarbe}{46,54,57}}{
+	\ifdefstring{\HtwkThesis@farbe}{dunkelblau}{\renewcommand{\htwkfarbe}{2,37,65}}{
+	\ifdefstring{\HtwkThesis@farbe}{schwarz}{\renewcommand{\htwkfarbe}{0,0,0}}{
+		\ClassError{HtwkThesis}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
+		\stop % Ausgewählte Farbe unzulässig
+	}}}}}}}}}}}}{}
+
+\newcommand{\htwkLogo}{Logos/HTWK_Black_sRGB.png}
+\newcommand{\htwkLogoH}{Logos/HTWK_Zusatz_de_H_Black_sRGB.png}
+\newcommand{\htwkLogoV}{Logos/HTWK_Zusatz_de_V_Black_sRGB.png}
+\newcommand{\fakultaetLogo}{Logos/HTWK-Fakultaetszusatz_\fakultaet_schwarz_de.png}
+
+\newcommand{\titlepageboxheight}{3\titleheight}
+\ifthenelse{\boolean{istAbschlussarbeit}}{\renewcommand{\titlepageboxheight}{0.5\paperheight}}{}
 
 
 %----- Schrift und Sprache --------------
 \usepackage[ngerman]{babel}				%%% Sprachpaket für Deutsche Sprache
 
 \usepackage[utf8]{inputenc}				%%% Verwendung von Umlauten und Kodierung dieser, sodass Latex es kompilieren kann
+
+\usepackage[default,regular,black]{sourceserifpro}				%%% Schriftart
 
 \usepackage[T1]{fontenc} 				%%% Silbentrennung bei Sonderzeichen
 
@@ -44,11 +102,13 @@
 \usepackage{siunitx}					%%% Setzt Einheiten und Zahlen korrekt - nützlich besonders bei naturwissenschaftlichen Arbeiten
 
 %------ Seite einrichten ----------------
-\usepackage[includehead,includefoot, left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm,showframe]{geometry}								%%% Gestaltung der Seitenrändern, Kopf- und Fußzeile
+\usepackage[includehead,includefoot, left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}								%%% Gestaltung der Seitenrändern, Kopf- und Fußzeile
 
 \usepackage[onehalfspacing]{setspace} 	%%% Zeilenbstand anpassen, Hier:1,5-fach
 
-\usepackage{scrextend}					%%% Erweitert die Möglichkeiten von bestimmten Dokumentklassen
+%\usepackage{scrextend}					%%% Erweitert die Möglichkeiten von bestimmten Dokumentklassen
+
+\usepackage[firstpage=true, scale=1, angle=0, opacity=1]{background}	%%% Hintergrundelemente
 
 %----- Mathemaische Formeln ------------
 \usepackage{amsmath} 					%%% Erweitert den möglichen Formelsatz
@@ -110,72 +170,128 @@
 \renewcommand{\figurename}{Abb.}	% Bilder werden nicht mehr mit "Abbildung" betitelt, sondern mit "Abb."
 
 %----------------------------------------------------------------------------------------
-%	STANDARD INHALTE
+%	STANDARD Seiten
 %----------------------------------------------------------------------------------------
 
 \AtBeginDocument{
+	\newgeometry{left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm, noheadfoot, nomarginpar} % Layout für Titelseite anpassen
+	\renewcommand\arraystretch{1}
+	\pagenumbering{gobble}
+
+	\settoheight{\titleheight}{\parbox{\textwidth-4cm}{\Huge\bfseries\@title\\}}
+	\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{\htwkLogoH}} % HTWK Logo Höhe messen
+	\settoheight{\logoVheight}{\includegraphics[width=0.24\paperwidth]{\htwkLogoV}} % Vertikales HTWK Logo Höhe messen
+
 	\begin{titlepage}
-		\centering
+		\ifthenelse{\boolean{istAbschlussarbeit}}{ % Titelseite für Abschlussarbeit
+			\centering
+			\includegraphics[width=0.24\paperwidth]{\htwkLogoV} % Logo HTWK
 
-		% Logo HTWK
-		\includegraphics[width=0.4\textwidth]{Bilder/LOGO}\\
-		\vspace{1cm}
+			\vfill
+			\vspace*{-\logoVheight}
 
-		% Thema der Arbeit
-		\makeatletter
-		\hspace{0.09\linewidth}
-		\begin{figure}[H]
-			\begin{minipage}{3.2cm}
-				\colorbox[RGB]{255,237,0}{\rule{3cm}{0pt}\rule{0pt}{8cm}}
+			\begin{minipage}{\textwidth-4cm}
+				\centering
+				% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
+				{\scshape Abschlussarbeit zur Erlangung\break des akademischen Grades\\}
+				{\scshape\LARGE\abschluss\\}
+
+				% Titel
+				\vspace{2\baselineskip}
+				{\Huge\bfseries\@title\\}
+				\vspace{2\baselineskip}
+
+				% Autor
+				{vorgelegt von:\\\Large\itshape\@author}\\
+				\vspace{2\baselineskip}
+
+				% Prüfer
+				Erstprüfer: \erstpruefer\\
+				Zweitprüfer: \zweitpruefer\\
+
+				\vspace{2\baselineskip}
+
+				Abgegeben am \@date
 			\end{minipage}
-			\begin{minipage}{\dimexpr\linewidth-6.7cm}
-				\huge\bfseries\centering\@title
+			\vfill
+		}{ % Titelseite für schriftliche Arbeit
+			\raggedright
+			\ifdefstring{\fakultaet}{none}{
+				\includegraphics[height=\logoheight]{\htwkLogoH} % Logo HTWK
+			}{
+				\includegraphics[height=\logoheight]{\htwkLogo} % Logo HTWK ohne Zusatz
+				\hfill
+				\includegraphics[height=\logoheight]{\fakultaetLogo} % Logo Fakultät
+			}
+
+			\vspace*{\logoheight}
+			\large
+			\begin{tabular}{@{}ll@{}}
+				Studiengang: & \studiengang \\
+				Semester:    & \semester    \\
+				Modul:       & \modul       \\
+				Dozent:      & \erstpruefer
+			\end{tabular}\\
+
+			\vfill
+
+			\centering
+			\begin{minipage}{\textwidth-4cm}
+				% Titel
+				\vspace{2\baselineskip}
+				\centering\Huge\bfseries\@title
+				\vspace{2\baselineskip}
 			\end{minipage}
-			\begin{minipage}{3.2cm}
-				\colorbox[RGB]{255,237,0}{\rule{3cm}{0pt}\rule{0pt}{8cm}}
-			\end{minipage}
-		\end{figure}
 
-		% Ziel der Abschlussarbeit (Bachelor, Master, Diplom...)
-		{\scshape\Large Abschlussarbeit zur Erlangung des akademischen Grades\\}
-		{\scshape\LARGE\abschluss\\}
-		\vspace{2cm}
+			\vfill
 
-		% Autor
-		{\Large\itshape\@author}
-		\vfill
+			\raggedright\large
+			\begin{tabular}{@{}ll@{}}
+				Vorgelegt von:  & \@author        \\ % Autor
+				Matrikelnr.:    & \matrikelnummer \\
+				E-Mail-Adresse: & \email          \\
+				Fachsemester:   & \fachsemester
+			\end{tabular}\break\\
 
-		% Prüfer
-		Erstprüfer: \erstpruefer\\
-		Zweitprüfer: \zweitpruefer\\
-		\vfill
+			Leipzig, den \@date % Ort & Datum
+		}
 
-		% Ort & Datum
-		{\large Leipzig, den \@date}
-		\makeatother
+		\backgroundsetup{hshift=1cm, contents={
+				\hspace*{\dimexpr-\leftmargin+\rightmargin-\oddsidemargin+\evensidemargin\relax}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
+				\hspace*{\dimexpr-\textwidth-24mm-\leftmargin+\rightmargin+\oddsidemargin-\evensidemargin\relax}
+				\colorbox[RGB]{\htwkfarbe}{\rule{24mm}{0pt}\rule{0pt}{\titlepageboxheight}}
+			}
+		} % Farbige Streifen links und rechts
 	\end{titlepage}
 
-	\include{Kurzfassung}					% Fügt Abstract hinzu
-	\pagenumbering{Roman}					% Römische Seitenzahlen
+	\restoregeometry % Standardlayout wiederherstellen
+	\blankpage
 
-	\tableofcontents 						% Erstellt ein Inhaltsverzeichnis
-	\listoffigures							% Erstellt Abbildungsverzeichnis
-	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis} 		% Fügt den Titel ins Inhaltsverzeichnis
-	\listoftables							% Erstellt Tabellenverzeichnis
-	\addcontentsline{toc}{chapter}{Tabellenverzeichnis}	% Fügt den Titel ins Inhaltsverzeichnis
-	\include{Symbolverzeichnis}				% Vorlage zum selber füllen
+	\include{Kurzfassung}
+	\blankpage
+	\pagenumbering{Roman}\setcounter{page}{3}
+	\tableofcontents						% Erstellt ein Inhaltsverzeichnis
+
 	\include{Abkuerzungsverzeichnis}		% Vorlage zum selber füllen
 
-	\pagenumbering{arabic}\setcounter{page}{1}	% Zurückstellen auf arabische Seitenzahlen, Start bei 1
+	\listoffigures							% Erstellt Abbildungsverzeichnis
+	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}		% Fügt den Titel ins Inhaltsverzeichnis
+
+	\listoftables							% Erstellt Tabellenverzeichnis
+	\addcontentsline{toc}{chapter}{Tabellenverzeichnis}		% Fügt den Titel ins Inhaltsverzeichnis
 }
 
 \AtEndDocument{
 	\bibliographystyle{unsrt}				% Legt Zitationsstil fest
 	\bibliography{Literatur}				% Erstellt ein Literaturverzeichnis
+	\addcontentsline{toc}{chapter}{Literaturverzeichnis}
 
+	\appendix
 	\include{Anhang}
-	\pagenumbering{gobble}
 
+	\newpage
+	\pagenumbering{gobble}
 	\chapter*{Selbstständigkeitserklärung}
 	\vspace{3cm}
 
@@ -190,7 +306,14 @@
 %	EIGENE BEFEHLE
 %----------------------------------------------------------------------------------------
 
-\newcommand{\email}[1]{\renewcommand{\email}{#1}}
-\newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}}
-\newcommand{\zweitpruefer}[1]{\renewcommand{\zweitpruefer}{#1}}
-\newcommand{\abschluss}[1]{\renewcommand{\abschluss}{#1}}
+\newcommand{\blankpage}{\newpage \ \newpage}
+
+\newcommand{\email}[1]{\renewcommand{\email}{#1}} % E-Mail-Adresse des Autor
+\newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}} % Name des ersten Prüfers
+\newcommand{\zweitpruefer}[1]{\renewcommand{\zweitpruefer}{#1}} % Name des zweiten Prüfers
+\newcommand{\abschluss}[1]{\renewcommand{\abschluss}{#1}} % Abschluss welcher mit dieser Arbeit erlangt wird
+\newcommand{\fachsemester}[1]{\renewcommand{\fachsemester}{#1}} % Fachsemester des Autors
+\newcommand{\matrikelnummer}[1]{\renewcommand{\matrikelnummer}{#1}} % Matrikelnummer des Autors
+\newcommand{\modul}[1]{\renewcommand{\modul}{#1}} % Das Modul in welchem die Arbeit verfasst wird
+\newcommand{\semester}[1]{\renewcommand{\semester}{#1}} % Das aktuelle Semester (WiSe 2023/24, SoSe 2024)
+\newcommand{\studiengang}[1]{\renewcommand{\studiengang}{#1}} % Studengang des Autors
