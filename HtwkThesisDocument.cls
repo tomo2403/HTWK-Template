@@ -30,15 +30,13 @@
 
 \DeclareVoidOption{istAbschlussarbeit}{\setboolean{istAbschlussarbeit}{true}} % Option zum Ändern des Typs der Arbeit
 \DeclareVoidOption{fakultaetAnzeigen}{\setboolean{fakultaetAnzeigen}{true}} % Option zum Anzeigen des Logos der Fakultät
-\DeclareVoidOption{ngerman}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
-\DeclareVoidOption{english}{\PassOptionsToPackage{main=\CurrentOption}{babel}}
 
 \DeclareStringOption[gelb]{farbe} % Option zum festlegen der Anzeigefarbe
 
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
 \ProcessKeyvalOptions{HtwkThesisDocument} % Klassenoptionen verarbeiten
 
-\LoadClass{scrbook} % Basisklasse laden
+\LoadClass[a4paper]{scrbook} % Basisklasse laden
 
 \newdimen\titleheight
 \newdimen\logoheight
@@ -163,6 +161,7 @@
 \AtBeginDocument{
 	\newgeometry{left=3.0cm, right=2.5cm, top=2.5cm, bottom=2.5cm, noheadfoot, nomarginpar} % Layout für Titelseite anpassen
 	\renewcommand\arraystretch{1}
+	\pagenumbering{gobble}
 
 	\settoheight{\titleheight}{\parbox{\textwidth-4cm}{\Huge\bfseries\@title\\}}
 	\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{\htwkLogoH}} % HTWK Logo Höhe messen
@@ -257,11 +256,47 @@
 	\end{titlepage}
 
 	\restoregeometry % Standardlayout wiederherstellen
+	\blankpage
+
+	\include{Kurzfassung}
+	\blankpage
+	\pagenumbering{Roman}\setcounter{page}{3}
+	\tableofcontents						% Erstellt ein Inhaltsverzeichnis
+
+	\include{Abkuerzungsverzeichnis}		% Vorlage zum selber füllen
+
+	\listoffigures							% Erstellt Abbildungsverzeichnis
+	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}		% Fügt den Titel ins Inhaltsverzeichnis
+
+	\listoftables							% Erstellt Tabellenverzeichnis
+	\addcontentsline{toc}{chapter}{Tabellenverzeichnis}		% Fügt den Titel ins Inhaltsverzeichnis
+}
+
+\AtEndDocument{
+	\bibliographystyle{unsrt}				% Legt Zitationsstil fest
+	\bibliography{Literatur}				% Erstellt ein Literaturverzeichnis
+	\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+
+	\appendix
+	\include{Anhang}
+
+	\newpage
+	\pagenumbering{gobble}
+	\chapter*{Selbstständigkeitserklärung}
+	\vspace{3cm}
+
+	Hiermit erkläre ich, dass ich die vorliegende Bachelorarbeit selbständig verfasst und nicht
+	anderweitig zu Prüfungszwecken vorgelegt habe. Es wurden nur die in der Arbeit ausdrücklich benannten Quellen und Hilfsmittel benutzt. Wörtlich oder sinngemäß übernommenes Gedankengut habe ich als solches kenntlich gemacht.
+	\vspace{3cm}
+
+	Ort, Datum: $ \underline{\hspace{4cm}} $ \hspace{2cm} Unterschrift: $ \underline{\hspace{4cm}} $
 }
 
 %----------------------------------------------------------------------------------------
 %	EIGENE BEFEHLE
 %----------------------------------------------------------------------------------------
+
+\newcommand{\blankpage}{\newpage \ \newpage}
 
 \newcommand{\email}[1]{\renewcommand{\email}{#1}} % E-Mail-Adresse des Autor
 \newcommand{\erstpruefer}[1]{\renewcommand{\erstpruefer}{#1}} % Name des ersten Prüfers
