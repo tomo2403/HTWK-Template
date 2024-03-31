@@ -24,14 +24,14 @@
 
 \usepackage{etoolbox} % Benötigt für Hooks
 \usepackage{ifthen}% Benötigt für Verarbeitung von Bedingungen
+\usepackage{xstring}
 
 \newboolean{istAbschlussarbeit}
-\newboolean{fakultaetAnzeigen}
 
 \DeclareVoidOption{istAbschlussarbeit}{\setboolean{istAbschlussarbeit}{true}} % Option zum Ändern des Typs der Arbeit
-\DeclareVoidOption{fakultaetAnzeigen}{\setboolean{fakultaetAnzeigen}{true}} % Option zum Anzeigen des Logos der Fakultät
 
-\DeclareStringOption[gelb]{farbe} % Option zum festlegen der Anzeigefarbe
+\DeclareStringOption{farbe} % Option zum festlegen der Anzeigefarbe
+\DeclareStringOption{fakultaet} % Option zum festlegen der Anzeigefarbe
 
 \DeclareDefaultOption{\PassOptionsToClass{\CurrentOption}{scrbook}} % Weitere Optionen an Basisklasse weiterreichen
 \ProcessKeyvalOptions{HtwkThesisDocument} % Klassenoptionen verarbeiten
@@ -41,14 +41,24 @@
 \newdimen\titleheight
 \newdimen\logoheight
 \newdimen\logoVheight
-\newdimen\logowidth
 
-\newcommand{\htwkLogoH}{Bilder/HTWK_Zusatz_H_Black_K}
-\newcommand{\htwkLogoV}{Bilder/HTWK_Zusatz_V_Black_K}
-\newcommand{\fakultaetLogo}{Bilder/HTWK-Fakultaetszusatz_IM_schwarz}
+\newcommand{\fakultaet}{} % Befehl für das Abrufen der Fakultät
+\IfValueTF{\HtwkTD@fakultaet}{ % Prüfen der festgelegten Fakultät
+	\ifdefstring{\HtwkTD@fakultaet}{}{\renewcommand{\fakultaet}{none}}{
+	\ifdefstring{\HtwkTD@fakultaet}{as}{\renewcommand{\fakultaet}{as}}{
+	\ifdefstring{\HtwkTD@fakultaet}{b}{\renewcommand{\fakultaet}{b}}{
+	\ifdefstring{\HtwkTD@fakultaet}{dit}{\renewcommand{\fakultaet}{dit}}{
+	\ifdefstring{\HtwkTD@fakultaet}{im}{\renewcommand{\fakultaet}{im}}{
+	\ifdefstring{\HtwkTD@fakultaet}{ing}{\renewcommand{\fakultaet}{ing}}{
+	\ifdefstring{\HtwkTD@fakultaet}{mnz}{\renewcommand{\fakultaet}{mnz}}{
+	\ifdefstring{\HtwkTD@fakultaet}{ww}{\renewcommand{\fakultaet}{ww}}{
+		\ClassError{HtwkThesisDocument}{Ungueltige Fakultaet!}{}
+		\stop % Ausgewählte Fakultät unzulässig
+}}}}}}}}}{}
 
-\newcommand{\htwkfarbe}{} % Befehl für das abrufen der Anzeigefarbe
+\newcommand{\htwkfarbe}{} % Befehl für das Abrufen der Anzeigefarbe
 \IfValueTF{\HtwkTD@farbe}{ % Prüfen der festgelegten Farbe
+	\ifdefstring{\HtwkTD@farbe}{}{\renewcommand{\htwkfarbe}{255,255,255}}{
 	\ifdefstring{\HtwkTD@farbe}{gelb}{\renewcommand{\htwkfarbe}{255,237,0}}{
 	\ifdefstring{\HtwkTD@farbe}{magenta}{\renewcommand{\htwkfarbe}{229,0,125}}{
 	\ifdefstring{\HtwkTD@farbe}{rot}{\renewcommand{\htwkfarbe}{229,48,9}}{
@@ -61,7 +71,12 @@
 	\ifdefstring{\HtwkTD@farbe}{schwarz}{\renewcommand{\htwkfarbe}{0,0,0}}{
 		\ClassError{HtwkThesisDocument}{Farbe nicht vorhanden! Verwende nur Farben aus der Gestaltungsrichtlinie!}{}
 		\stop % Ausgewählte Farbe unzulässig
-	}}}}}}}}}}}{}
+	}}}}}}}}}}}}{}
+
+\newcommand{\htwkLogo}{Logos/HTWK_Black_sRGB.png}
+\newcommand{\htwkLogoH}{Logos/HTWK_Zusatz_de_H_Black_sRGB.png}
+\newcommand{\htwkLogoV}{Logos/HTWK_Zusatz_de_V_Black_sRGB.png}
+\newcommand{\fakultaetLogo}{Logos/HTWK-Fakultaetszusatz_\fakultaet_schwarz_de.png}
 
 \newcommand{\titlepageboxheight}{3\titleheight}
 \ifthenelse{\boolean{istAbschlussarbeit}}{\renewcommand{\titlepageboxheight}{0.5\paperheight}}{}
@@ -165,17 +180,12 @@
 
 	\settoheight{\titleheight}{\parbox{\textwidth-4cm}{\Huge\bfseries\@title\\}}
 	\settoheight{\logoheight}{\includegraphics[width=0.4\paperwidth]{\htwkLogoH}} % HTWK Logo Höhe messen
-	\settowidth{\logowidth}{\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}}} % HTWK Logo Breite messen
 	\settoheight{\logoVheight}{\includegraphics[width=0.24\paperwidth]{\htwkLogoV}} % Vertikales HTWK Logo Höhe messen
 
 	\begin{titlepage}
 		\ifthenelse{\boolean{istAbschlussarbeit}}{ % Titelseite für Abschlussarbeit
 			\centering
 			\includegraphics[width=0.24\paperwidth]{\htwkLogoV} % Logo HTWK
-
-			\ifthenelse{\boolean{fakultaetAnzeigen}}{
-				\ClassInfo{HtwkThesisDocument}{Das Logo der Fakultät ist auf Abschlussarbeiten nicht sichtbar.}
-			}{}
 
 			\vfill
 			\vspace*{-\logoVheight}
@@ -206,12 +216,12 @@
 			\vfill
 		}{ % Titelseite für schriftliche Arbeit
 			\raggedright
-			\ifthenelse{\boolean{fakultaetAnzeigen}}{
-				\adjustbox{trim=0 0 {0.524\width} 0, clip}{\includegraphics[height=\logoheight]{\htwkLogoH}} % Logo HTWK ohne Zusatz
+			\ifdefstring{\fakultaet}{none}{
+				\includegraphics[height=\logoheight]{\htwkLogoH} % Logo HTWK
+			}{
+				\includegraphics[height=\logoheight]{\htwkLogo} % Logo HTWK ohne Zusatz
 				\hfill
 				\includegraphics[height=\logoheight]{\fakultaetLogo} % Logo Fakultät
-			}{
-				\includegraphics[height=\logoheight]{\htwkLogoH} % Logo HTWK
 			}
 
 			\vspace*{\logoheight}
